@@ -5,10 +5,10 @@ const Moltin = MoltinGateway({
 })
 
 export default {
-  getProducts () {
-    return Moltin.Products.Filter({}).With('main_image').Limit(10).All()
+  getProducts (filtro) {
+    return Moltin.Products.Filter(filtro).With('main_image').All()
   },
   getCart () {
-    return Moltin.Cart.Items()
-  },
+    return Moltin.Cart().Items()
+  }
 }

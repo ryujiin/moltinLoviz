@@ -30,7 +30,7 @@ export default {
       drawer: null,
       items: [
         { title: 'Home', icon: 'home', link: '/' },
-        { title: 'Shop', link: 'shop' },
+        { title: 'Shop', link: '/collection/all' },
         { title: 'Custom', link: 'custom' }
       ]
     }

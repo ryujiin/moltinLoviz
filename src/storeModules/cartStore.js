@@ -41,6 +41,7 @@ const actions = {
     const promise = new Promise(function (resolve, reject) {
       MoltinService.getCart()
         .then(res => {
+          console.log(res)
           context.commit('setCart', res)
           resolve(res)
         })
