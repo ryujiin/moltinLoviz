@@ -1,13 +1,5 @@
-<template>
-  <HelloWorld />
+<template lang="pug">
+.home
+  v-card(flat)
+    v-img(src="https://cdn.vuetifyjs.com/images/cards/docks.jpg")
 </template>
-
-<script>
-  import HelloWorld from '../components/HelloWorld'
-
-  export default {
-    components: {
-      HelloWorld
-    }
-  }
-</script>
