@@ -8,7 +8,10 @@ header
       v-btn(icon)
         v-icon search
       v-btn(icon)
-        v-icon shopping_cart
+        v-badge()
+          template(v-slot:badge)
+            span {{getNumProduct}}
+          v-icon shopping_cart
   v-navigation-drawer(absolute, temporary, v-model="drawer")
     v-list
       v-list-tile(v-for="item in items" :key="item.title" @click="navegar(item.link)")
@@ -19,6 +22,7 @@ header
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -31,11 +35,18 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters(['getNumProduct'])
+  },
   methods: {
+    ...mapActions(['pullCart']),
     navegar (link) {
       console.log(link)
       this.$router.push(link)
     }
+  },
+  mounted () {
+    this.pullCart()
   }
 }
 </script>

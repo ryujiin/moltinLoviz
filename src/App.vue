@@ -8,6 +8,7 @@
 <script>
 import HelloWorld from './components/HelloWorld'
 import Header from './components/layaut/Header'
+import MoltinService from '@/services/moltin.js'
 
 export default {
   name: 'App',
