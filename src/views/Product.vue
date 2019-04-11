@@ -13,10 +13,14 @@
           h5 Choose Size
           span Size Guide
         v-layout(wrap row)
-          v-btn(v-for="opt in getProduct.data.meta.variations[0].options" :key="opt.id") {{opt.name}}
-        v-layout
-          v-btn(block dark round large ) ADD TO CART
-        v-layout
+          v-btn(v-for="opt in getProduct.data.meta.variations[0].options"
+                :key="opt.id" :dark="getSize.id === opt.id" @click="setSize(opt)") {{opt.name}}
+        v-layout(wrap row)
+          v-flex(xs12 v-if="alert")
+            v-icon(color="error") close
+            span(class="error--text") Please Select Size
+          v-flex(xs12)
+            v-btn(block round large color="deep-orange" dark @click="addtocart") ADD TO CART
     .product_info
       v-container(fluid)
         v-layout
@@ -34,11 +38,16 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
+  data () {
+    return {
+      alert: false
+    }
+  },
   computed: {
-    ...mapGetters(['getProduct'])
+    ...mapGetters(['getProduct', 'getSize'])
   },
   beforeMount () {
     this.loadProductBySlug(this.$route.params.slug).then(res => {
@@ -46,10 +55,30 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['loadProductBySlug', 'loadProductById']),
+    ...mapMutations(['setSize']),
+    ...mapActions(['loadProductBySlug', 'loadProductById', 'pushProductCart']),
     getImg: function (file) {
       return file.link.href
+    },
+    borrarAlert () {
+      this.alert = false
+    },
+    addtocart () {
+      if (this.getSize.id) {
+        let data = {
+          product: this.getProduct.data.meta.variation_matrix[this.getSize.id],
+          qty: 1
+        }
+        this.pushProductCart(data).then(res => {
+          console.log('adadad')
+        })
+      } else {
+        this.alert = true
+      }
     }
+  },
+  watch: {
+    'getSize': 'borrarAlert'
   }
 }
 </script>

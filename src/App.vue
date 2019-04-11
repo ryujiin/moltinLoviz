@@ -3,15 +3,17 @@
     Header
     v-content()
       router-view
+    Footer
 </template>
 
 <script>
 import Header from './components/layaut/Header'
+import Footer from '@/components/layaut/Footer'
 
 export default {
   name: 'App',
   components: {
-    Header
+    Header, Footer
   },
   data () {
     return {

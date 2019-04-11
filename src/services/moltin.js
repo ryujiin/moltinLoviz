@@ -12,9 +12,12 @@ export default {
     return Moltin.Products.With(['main_image', 'files']).Get(id)
   },
   findBySlug (slug) {
-    return Moltin.Products.Filter( { eq: {slug: slug} } ).Limit(1).All()
+    return Moltin.Products.Filter({ eq: { slug: slug } }).Limit(1).All()
   },
   getCart () {
     return Moltin.Cart().Items()
+  },
+  addToCart (productId, qty) {
+    return Moltin.Cart().AddProduct(productId, qty)
   }
 }
