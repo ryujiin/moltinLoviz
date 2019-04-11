@@ -7,7 +7,7 @@
         v-flex(xs12)
           h1.header_title.text-xs-center {{title}}
       v-layout(wrap row)
-        v-flex(v-for="item in getCollection.data" d-flex)
+        v-flex(v-for="item in getCollection.data" d-flex :key="item.id")
           v-hover
             v-card(slot-scope="{ hover }", :class="`elevation-${hover ? 12 : 2}`")
               router-link(:to="`/product/${item.slug}`")
@@ -32,7 +32,7 @@ export default {
   methods: {
     ...mapActions(['pullProducts']),
     getThum (id) {
-      let img = ""
+      let img = ''
       this.getCollection.included.main_images.forEach(i => {
         if (i.id === id) {
           img = i.link.href
@@ -42,7 +42,7 @@ export default {
     }
   },
   mounted () {
-    this.pullProducts({like: {sku: 'PR-*'}})
+    this.pullProducts({ like: { sku: 'PR-*' } })
   }
 }
 </script>

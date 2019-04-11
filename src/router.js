@@ -17,6 +17,11 @@ export default new Router({
       path: '/collection/:slug',
       name: 'collection',
       component: () => import('./views/Collection.vue')
+    },
+    {
+      path: '/product/:slug',
+      name: 'productSingle',
+      component: () => import('./views/Product.vue')
     }
   ]
 })
