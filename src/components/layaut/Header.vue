@@ -7,7 +7,7 @@ header
     v-toolbar-items
       v-btn(icon)
         v-icon search
-      v-btn(icon)
+      v-btn(icon to="/cart")
         v-badge()
           template(v-slot:badge)
             span {{getNumProduct}}
@@ -36,17 +36,32 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getNumProduct'])
+    ...mapGetters(['getNumProduct', 'getSubtotal', 'getFreeShip', 'getShipStandard', 'getItemsCart'])
   },
   methods: {
-    ...mapActions(['pullCart']),
+    ...mapActions(['pullCart', 'pushProductCustom', 'deleteItemCart']),
     navegar (link) {
-      console.log(link)
       this.$router.push(link)
+    },
+    verificarShip () {
+      // Verifica la cantidad
+      if (this.getSubtotal.value < this.getFreeShip) {
+        if (!this.getItemsCart.find(i => i.type === 'custom_item')) {
+          this.pushProductCustom(this.getShipStandard)
+        }
+      } else {
+        // Tiene un carro con mayor monto que el necesario para el freeShip
+        if (this.getItemsCart.find(i => i.type === 'custom_item')) {
+          this.deleteItemCart(this.getItemsCart.find(i => i.type === 'custom_item').id)
+        }
+      }
     }
   },
   mounted () {
     this.pullCart()
+  },
+  watch: {
+    'getSubtotal.value': 'verificarShip'
   }
 }
 </script>

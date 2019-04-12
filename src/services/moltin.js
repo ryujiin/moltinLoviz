@@ -19,5 +19,14 @@ export default {
   },
   addToCart (productId, qty) {
     return Moltin.Cart().AddProduct(productId, qty)
+  },
+  removeItemCart (itemId) {
+    return Moltin.Cart().RemoveItem(itemId)
+  },
+  updateItemCart (itemId, quantity) {
+    return Moltin.Cart().UpdateItemQuantity(itemId, quantity)
+  },
+  addItemCustomCart (item) {
+    return Moltin.Cart().AddCustomItem(item)
   }
 }

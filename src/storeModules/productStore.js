@@ -3,7 +3,7 @@ import MoltinService from '@/services/moltin'
 const state = {
   productBySlug: {},
   product: {},
-  size: ''
+  size: {}
 }
 
 const getters = {

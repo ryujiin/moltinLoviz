@@ -20,7 +20,32 @@
             v-icon(color="error") close
             span(class="error--text") Please Select Size
           v-flex(xs12)
-            v-btn(block round large color="deep-orange" dark @click="addtocart") ADD TO CART
+            v-btn(block round large color="deep-orange"
+                  class="white--text" @click="addtocart"
+                  :loading="comprando" :disabled="comprando") ADD TO CART
+            v-dialog(v-model="comprando" hide-overlay width="300")
+              v-card(color="primary" dark)
+                v-card-text
+                  | Please stand by
+                  v-progress-linear(indeterminate color="white" class="mb-0")
+            v-dialog(v-model="modal" max-width="450")
+              v-card()
+                v-card-title
+                  v-icon(large left color="green") done
+                  span(class="title font-weight-light") Added to Cart
+                v-container
+                  v-layout
+                    v-flex(xs4)
+                      v-img(:src="getProduct.included.main_images[0].link.href")
+                    v-flex(xs8)
+                      h4
+                        | {{getProduct.data.name}}
+                        br
+                        | {{getProduct.data.meta.display_price.without_tax.formatted}}
+                  v-layout
+                    v-btn(outline block color="deep-orange") Continue Shopping
+                  v-layout
+                    v-btn(block color="deep-orange" dark) Checkout Now
     .product_info
       v-container(fluid)
         v-layout
@@ -43,7 +68,9 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      alert: false
+      alert: false,
+      comprando: false,
+      modal: false
     }
   },
   computed: {
@@ -65,12 +92,15 @@ export default {
     },
     addtocart () {
       if (this.getSize.id) {
+        this.comprando = true
         let data = {
           product: this.getProduct.data.meta.variation_matrix[this.getSize.id],
           qty: 1
         }
         this.pushProductCart(data).then(res => {
-          console.log('adadad')
+          this.comprando = false
+          this.modal = true
+          this.setSize({})
         })
       } else {
         this.alert = true
