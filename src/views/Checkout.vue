@@ -1,78 +1,67 @@
 <template lang="pug">
-.checkout
+.checkout(v-if="getCart.display_price")
   button(class="order-summary-toggle" @click="show = !show")
-    span.wrap
+    .marco
       v-layout(align-center justify-space-between row fill-height)
         v-flex
           v-icon(color="blue lighten-2") shopping_basket
           span(class="info--text") Show order summary
           v-btn(icon)
-            v-icon(color="blue lighten-2") {{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+            v-icon(color="blue lighten-2") {{ show ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
         v-flex
           .title(class="text-xs-right") {{getCart.display_price.without_tax.formatted}}
   v-slide-y-transition
-    v-card(v-show="show")
-      .wrap
-        v-layout(v-for="item in getItemsCart" :key="item.id" align-center justify-space-between row fill-height)
-          v-flex(xs2 grow pa-2)
-            v-img(:src="item.image.href")
-          v-flex(xs8)
-            v-badge
-              template(v-slot:badge)
-                span {{item.quantity}}
-              span {{item.name}}
-          v-flex(xs2)
-            h4.text-xs-right {{item.meta.display_price.without_tax.value.formatted}}
+    v-card.summary(v-show="show" color="#fafafa")
+      OrdenSummaty
+  .marco
+    v-stepper.pasos(v-model="step")
+      v-stepper-header.hidden-xs-only
+        v-stepper-step(:complete="step > 1" step="1") Name of step 1
         v-divider
-        v-layout
-          span Have a promo code?
-        v-layout(align-center row fill-height)
-          v-flex(xs10)
-            v-text-field(label="Gift card or discount code")
-          v-flex(xs2)
-            v-btn(disabled) Apply
+        v-stepper-step(:complete="step > 2" step="2") Name of step 2
         v-divider
-        v-layout(row align-center justify-space-between fill-height)
-          v-flex(xs9)
-            span Subtotal
-          v-flex(xs3)
-            h4.text-xs-right {{getSubtotal.formatted}}
-        v-layout(row align-center justify-space-between fill-height)
-          v-flex(xs9)
-            span Shipping
-          v-flex(xs3)
-            h4.text-xs-right {{getShip}}
-        v-divider
-        v-layout(row align-center justify-space-between fill-height)
-          v-flex(xs9)
-            span Total
-          v-flex.text-xs-right(xs3)
-            span {{getCart.display_price.without_tax.currency}}
-            strong {{getCart.display_price.without_tax.formatted}}
-  .wrap
-    .step
-      v-layout
-        .headline Contact information
-        .help
-          | Already have an account?
-          v-btn(small) Log in
+        v-stepper-step(:complete="step > 3" step="3") Name of step 3
+      v-stepper-items
+        v-stepper-content(step="1")
+          StepInfo
+        v-stepper-content(step="2")
+          StepShip
+        v-stepper-content(step="3")
+          StepPay
+    .legacy
+      p.caption Your data are processed by Loviz DC LLC in order to manage your order and the payment of your order, to deliver the product to you, to manage a return of the product, to contact you with regards to your order, to ensure the good functioning of the website, and to send you newsletters if you have agreed to. You must fill all the fields that are not labeled as mandatory in order to make an order. You have a right of access, rectification deletion of your personal data, a right to oppose, restrict the processing in certain circumstances, a right to data portability, a right to lodge a complaint with a supervisory authority, a right to withdraw your consent at any time, and a right to set specific instructions regarding the use of your personal data after your death. If you wish to exercise these rights and/or obtain information about your data, please contact support.
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+import OrdenSummaty from '@/components/checkout/OrdenSummary'
+import StepInfo from '@/components/checkout/StepInfo.vue'
+import StepShip from '@/components/checkout/StepShip.vue'
+import StepPay from '@/components/checkout/StepPay.vue'
+
 export default {
+  components: {
+    OrdenSummaty, StepInfo, StepShip, StepPay
+  },
   data () {
     return {
       show: false
     }
   },
   computed: {
-    ...mapGetters(['getCart', 'getItemsCart', 'getSubtotal', 'getShip'])
+    ...mapGetters(['getCart', 'getCheckoutStep']),
+    step: {
+      get () { return this.$store.getters.getCheckoutStep },
+      set (newValue) { this.$store.commit('setCheckoutStep', newValue) }
+    }
+  },
+  methods: {
+    ...mapMutations(['setCheckoutStep'])
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .order-summary-toggle{
   background: #fafafa;
   border-top: 1px solid #e6e6e6;
@@ -82,10 +71,25 @@ export default {
   text-align: left;
   width: 100%;
 }
-.wrap {
+.marco {
   display: block;
   margin: 0 auto;
   max-width: 40em;
   zoom: 1;
+  @media (max-width: 999px){
+    padding: 0 1em;
+  }
+}
+.pasos{
+  box-shadow: none;
+}
+.legacy{
+  margin: 20px 0;
+}
+.v-stepper__content{
+  padding: 20px 0;
+}
+.summary{
+  margin-bottom: 10px;
 }
 </style>

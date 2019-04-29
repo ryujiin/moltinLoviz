@@ -36,32 +36,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getNumProduct', 'getSubtotal', 'getFreeShip', 'getShipStandard', 'getItemsCart'])
+    ...mapGetters(['getNumProduct', 'getFreeShip', 'getItemsCart'])
   },
   methods: {
-    ...mapActions(['pullCart', 'pushProductCustom', 'deleteItemCart']),
+    ...mapActions(['pullCart']),
     navegar (link) {
       this.$router.push(link)
-    },
-    verificarShip () {
-      // Verifica la cantidad
-      if (this.getSubtotal.value < this.getFreeShip) {
-        if (!this.getItemsCart.find(i => i.type === 'custom_item')) {
-          this.pushProductCustom(this.getShipStandard)
-        }
-      } else {
-        // Tiene un carro con mayor monto que el necesario para el freeShip
-        if (this.getItemsCart.find(i => i.type === 'custom_item')) {
-          this.deleteItemCart(this.getItemsCart.find(i => i.type === 'custom_item').id)
-        }
-      }
     }
   },
   mounted () {
     this.pullCart()
-  },
-  watch: {
-    'getSubtotal.value': 'verificarShip'
   }
 }
 </script>

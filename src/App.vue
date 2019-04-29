@@ -27,4 +27,7 @@ export default {
 main{
   background-color: #fff
 }
+.v-content{
+  margin-bottom: 10px;
+}
 </style>

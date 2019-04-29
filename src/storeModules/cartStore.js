@@ -3,45 +3,66 @@ import MoltinService from '@/services/moltin'
 const state = {
   cart: {},
   freeShip: 6500,
+  descuento: '',
+  total: '',
   numProduct: 0,
   itemsCart: [],
   subtotal: {
     value: null,
     formatted: ''
   },
-  shipStandard: {
-    name: 'Standard Shipping (7 - 10 days)',
-    sku: 'stand-ship',
-    description: 'Standard shipping',
-    quantity: 1,
-    price: {
-      amount: 990
+  metodos: [
+    {
+      name: 'Free Standard Shipping',
+      sku: 'free-ship',
+      description: 'Shipping time (7 - 10 days)',
+      quantity: 1,
+      show: false,
+      price: {
+        amount: 0
+      },
+      display_price: {
+        formatted: 'FREE'
+      }
     },
-    display_price: {
-      formatted: '$9.90'
-    }
-  },
-  shipExpress: {
-    name: 'Express Shipping (2 - 3 days)',
-    sku: 'express-ship',
-    description: 'Express shipping',
-    quantity: 1,
-    price: {
-      amount: 1690
+    {
+      name: 'Standard Shipping',
+      sku: 'stand-ship',
+      description: 'Shipping time (7 - 10 days)',
+      quantity: 1,
+      show: true,
+      price: {
+        amount: 990
+      },
+      display_price: {
+        formatted: '$9.90'
+      }
     },
-    display_price: {
-      formatted: '$16.90'
+    {
+      name: 'Express Shipping',
+      sku: 'express-ship',
+      description: 'Shipping time (2 - 3 days)',
+      quantity: 1,
+      show: true,
+      price: {
+        amount: 1690
+      },
+      display_price: {
+        formatted: '$16.90'
+      }
     }
-  }
+  ]
 }
 
 const getters = {
   getCart: state => state.cart,
+  getDescuento: state => state.descuento,
+  getTotal: state => state.total,
   getItemsCart: state => state.itemsCart,
   getSubtotal: state => state.subtotal,
   getNumProduct: state => state.numProduct,
   getFreeShip: state => state.freeShip,
-  getShipStandard: state => state.shipStandard,
+  getMetodos: state => state.metodos,
   getShip: state => {
     let ship = state.itemsCart.find(i => i.type === 'custom_item')
     if (ship) {
@@ -58,16 +79,49 @@ const mutations = {
     state.itemsCart = data.data
     let sub = 0
     let num = 0
+    let total = 0
     state.itemsCart.forEach(function (i) {
-      if (i.type !== 'custom_item') {
+      if (i.type === 'cart_item') {
         num = num + i.quantity
         sub = sub + i.meta.display_price.without_tax.value.amount
+        total = total + i.value.amount
+      }
+      if (i.type === 'custom_item') {
+        total = total + i.value.amount
       }
     })
+    if (total !== state.cart.display_price.without_tax.amount) {
+      let descuento = (total - state.cart.display_price.without_tax.amount) / 100
+      descuento = Number(descuento).toFixed(2)
+      total = total / 100
+      state.descuento = '$' + descuento
+      state.total = '$' + Number(total).toFixed(2)
+    } else {
+      state.descuento = ''
+      state.total = ''
+    }
     state.numProduct = num
     state.subtotal.value = sub
     sub = sub / 100
-    state.subtotal.formatted = '$' + sub + '0'
+    sub = Number(sub).toFixed(2)
+    state.subtotal.formatted = '$' + sub
+    // modificar mostrar metodos
+    state.metodos.forEach((m) => {
+      if (m.sku === 'free-ship') {
+        if (state.freeShip > state.subtotal.value) {
+          m.show = false
+        } else {
+          m.show = true
+        }
+      }
+      if (m.sku === 'stand-ship') {
+        if (state.freeShip < state.subtotal.value) {
+          m.show = false
+        } else {
+          m.show = true
+        }
+      }
+    })
   }
 }
 
@@ -118,6 +172,19 @@ const actions = {
         .then(res => {
           context.commit('setCart', res)
           resolve(res)
+        })
+    })
+    return promise
+  },
+  AddPromotionToCart (context, code) {
+    const promise = new Promise(function (resolve, reject) {
+      MoltinService.addPromCode(code)
+        .then(res => {
+          context.commit('setCart', res)
+          resolve(res)
+        })
+        .catch(error => {
+          reject(error)
         })
     })
     return promise

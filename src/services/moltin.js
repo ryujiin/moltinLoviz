@@ -28,5 +28,8 @@ export default {
   },
   addItemCustomCart (item) {
     return Moltin.Cart().AddCustomItem(item)
+  },
+  addPromCode (code) {
+    return Moltin.Cart().AddPromotion(code)
   }
 }
